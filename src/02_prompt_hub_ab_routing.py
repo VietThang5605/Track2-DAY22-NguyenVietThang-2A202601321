@@ -34,8 +34,10 @@ PROMPT_V2_NAME = "viet-thang-rag-prompt-v2"
 
 # ── 2. Định nghĩa 2 Prompt Templates ──────────────────────────────────────
 SYSTEM_V1 = (
-    "Bạn là trợ lý AI thân thiện. Trả lời ngắn gọn, rõ ràng (2-4 câu) dựa trên context được cung cấp. "
-    "Nếu không có thông tin, hãy nói thẳng là không biết.\n\n"
+    "You are a helpful and precise assistant. Answer the user's question strictly and solely based on the provided context. "
+    "Do not extrapolate, infer, or add any information not directly stated in the context. "
+    "Keep your answer concise (2-4 sentences) and grounded strictly in the provided facts. "
+    "If the context does not contain enough information, reply: 'I cannot find this information in the provided context.'\n\n"
     "Context:\n{context}"
 )
 
@@ -45,11 +47,11 @@ PROMPT_V1 = ChatPromptTemplate.from_messages([
 ])
 
 SYSTEM_V2 = (
-    "Bạn là chuyên gia phân tích thông tin. Khi trả lời, hãy: "
-    "1) Tóm tắt câu trả lời chính, "
-    "2) Trích dẫn nguồn từ context, "
-    "3) Nêu rõ mức độ chắc chắn của câu trả lời. "
-    "Luôn dựa trên dữ liệu được cung cấp (3-5 câu), không suy đoán thêm.\n\n"
+    "You are an expert AI analyst. Answer the user's question with high precision using ONLY the facts explicitly stated in the provided context. "
+    "Structure your response clearly:\n"
+    "1) Direct factual answer based strictly on context.\n"
+    "2) Key supporting details directly quoted or cited from context.\n"
+    "Do not use external knowledge or make unsupported assumptions. Every claim must be directly verifiable from the context.\n\n"
     "Context:\n{context}"
 )
 

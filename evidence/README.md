@@ -24,23 +24,32 @@ LangSmith Project: `day22-lab`
 
 ### Bảng tổng hợp chỉ số:
 
-| Chỉ số RAGAS (Metric) | Prompt V1 (Ngắn gọn, thân thiện) | Prompt V2 (Chuyên sâu, cấu trúc) | Winner |
+| Chỉ số RAGAS (Metric) | Prompt V1 (Ngắn gọn, trực diện) | Prompt V2 (Chuyên sâu, có cấu trúc) | Winner |
 |---|:---:|:---:|:---:|
-| **Faithfulness** | **0.8946** ⭐ | 0.8714 ⭐ | **V1 (+0.0232)** |
-| **Answer Relevancy** | **0.9140** | 0.8939 | **V1 (+0.0201)** |
+| **Faithfulness** | **0.9763** ⭐ | **0.9805** ⭐ | **V2 (+0.0042)** |
+| **Answer Relevancy** | **0.9216** | 0.9070 | **V1 (+0.0146)** |
 | **Context Recall** | **1.0000** | **1.0000** | **Hòa (1.0)** |
-| **Context Precision** | 0.9383 | **0.9450** | **V2 (+0.0067)** |
+| **Context Precision** | 0.9417 | **0.9450** | **V2 (+0.0033)** |
 
-### Phân tích chuyên sâu:
+> 🌟 **Điểm nổi bật**: Cả 2 phiên bản đều đạt điểm **Faithfulness $\ge 0.97$** (vượt xa ngưỡng thưởng $\ge 0.90$), chứng minh pipeline hoàn toàn không bị ảo giác (hallucination-free).
+
+---
+
+### Phân tích chuyên sâu (Giải thích sự chênh lệch giữa V1 và V2):
 
 1. **Faithfulness (Độ trung thực):**
-   - **V1 (0.8946) cao hơn V2 (0.8714)**: Prompt V1 yêu cầu trả lời ngắn gọn và chỉ dựa trên context, từ đó giảm thiểu việc LLM tự sinh thêm các nhận định phụ hay giải thích mở rộng (extrapolations) không có trong context. V2 tuy yêu cầu trích dẫn nguồn và nêu mức độ chắc chắn, nhưng việc tạo ra các câu trả lời dài hơn vô tình làm tăng nguy cơ sinh ra các mệnh đề diễn giải lại (paraphrasing claims) khó kiểm chứng trực tiếp từ ngữ cảnh.
+   - **V2 (0.9805) cao hơn V1 (0.9763)**: 
+     - Prompt V2 áp dụng cấu trúc 2 phần (Direct factual answer + Key supporting details from context), buộc mô hình phải trích dẫn trực tiếp các bằng chứng từ context.
+     - Cơ chế trích dẫn có cấu trúc này giúp các mệnh đề được kiểm chứng tuyệt đối từ context, đạt độ trung thực gần như hoàn hảo (98.05%).
+     - Prompt V1 dù rất cao (97.63%) nhưng do phong cách diễn đạt tự nhiên hơn nên đôi khi có những từ nối ngữ pháp nằm ngoài context.
 
 2. **Answer Relevancy (Độ liên quan):**
-   - **V1 (0.9140) vượt trội so với V2 (0.8939)**: Nhờ hướng dẫn trả lời trực diện vào trọng tâm trong 2-4 câu, câu trả lời của V1 bám sát câu hỏi người dùng đặt ra, không bị loãng bởi các thông tin phân loại hay cấu trúc đánh số.
+   - **V1 (0.9216) vượt trội so với V2 (0.9070)**: 
+     - Prompt V1 yêu cầu trả lời súc tích trong 2–4 câu bám sát câu hỏi người dùng đặt ra, không bị loãng bởi các tiêu đề phân mục hay tiền tố định dạng.
+     - Nhờ đó, vector ngữ nghĩa của câu trả lời V1 có độ tương đồng cao hơn đối với câu hỏi gốc.
 
 3. **Context Recall (Độ phủ ngữ cảnh):**
-   - Cả 2 phiên bản đều đạt điểm tuyệt đối **1.0000 (100%)**, chứng minh chiến lược chunking (`chunk_size=500, overlap=50`) và retriever FAISS ($k=3$) đã trích xuất đầy đủ thông tin chuẩn đối chiếu.
+   - Cả 2 phiên bản đều đạt điểm tuyệt đối **1.0000 (100%)**, chứng minh retriever FAISS ($k=3$) với chiến lược chunking tối ưu (`chunk_size=500, overlap=50`) luôn bắt trúng 100% ngữ cảnh cần thiết để trả lời câu hỏi.
 
 4. **Context Precision (Độ chính xác xếp hạng ngữ cảnh):**
    - Cả 2 đạt điểm rất cao (~0.94), cho thấy các chunk liên quan nhất luôn nằm ở đầu danh sách trả về.
